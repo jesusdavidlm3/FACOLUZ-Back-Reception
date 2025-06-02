@@ -14,6 +14,7 @@ app.use(express.json())
 app.use(express.urlencoded({extended: true}))
 
 app.post('/api/login', async (req, res) => {
+	console.log(req.body)
 	const {passwordHash} = req.body
 	let dbResponse
 	try{
@@ -45,7 +46,11 @@ app.get('/api/verifyPatient/:patientId', tokenVerification.forReception, async(r
 	const patientId = req.params.patientId;
 	try{
 		const dbResponse = await db.verifyPatient(patientId)
-		res.status(200).send(dbResponse)
+		if(dbResponse.lenght > 0){
+			res.status(200).send(dbResponse)
+		}else{
+			res.status(404).send("El paciente no esta registrado")
+		}
 	}catch(err){
 		console.log(err)
 		res.status(500)
@@ -94,4 +99,8 @@ app.delete('/api/cancelDate/:dateId', tokenVerification.forReception, async(req,
 		console.log(err)
 		res.status(500).send(err)
 	}
+})
+
+app.listen(port, "0.0.0.0", () => {
+	console.log(`Puerto: ${port}`)
 })

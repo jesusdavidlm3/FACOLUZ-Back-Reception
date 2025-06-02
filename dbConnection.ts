@@ -1,6 +1,7 @@
 import mariadb from 'npm:mariadb'
 import * as t from './interfaces.ts'
 import "jsr:@std/dotenv/load";
+import { v4 } from "https://deno.land/std@0.224.0/uuid/mod.ts";
 
 const db = mariadb.createPool({
 	host: Deno.env.get("BDD_HOST"),
@@ -41,6 +42,7 @@ async function execute(query: string, params?: object) {
 }
 
 export async function login(data: t.loginData){
+	console.log(data.id)
 	const id = data.id
 	const res = await query('SELECT * FROM users WHERE id = ?', [id])
 	return res
@@ -52,7 +54,7 @@ export async function verifyPatient(patientId: number) {
 }
 
 export async function makeHistory(data: t.makeHistory) {
-	const id = 
+	const id = v4.generate()
 	const createPatient = Date.now()
 	const name = data.name
 	const lastname = data.lastname
@@ -142,7 +144,7 @@ export async function makeHistory(data: t.makeHistory) {
 
 export async function makeDate(data: t.makeDate) {
 
-	const id = 
+	const id = v4.generate()
 	const patientId = data.patientId
 	const doctorId = data.doctorId
 	const date = data.date

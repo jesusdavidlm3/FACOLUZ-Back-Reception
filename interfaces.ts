@@ -8,10 +8,8 @@ export interface makeHistory{
     lastname: string,
     identificationType: number,
     patientIdentification: number,
-    patientCode: number,
     phone: string,
     sex: number,
-    bloodType: number,
     birthDate: Date,
     birthPlace: string,
     religion: string,
@@ -26,9 +24,7 @@ export interface makeHistory{
     companionPhone: string,
     companionRelationship: string,
     instructionGrade: number,
-    ailments: number[],
-    idStudent: string,
-    idTeacher: string,
+    idStudent: number
 }
 
 export interface makeDate{

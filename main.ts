@@ -14,7 +14,6 @@ app.use(express.json())
 app.use(express.urlencoded({extended: true}))
 
 app.post('/api/login', async (req, res) => {
-	console.log(req.body)
 	const {passwordHash} = req.body
 	let dbResponse
 	try{
@@ -46,7 +45,8 @@ app.get('/api/verifyPatient/:patientId', tokenVerification.forReception, async(r
 	const patientId = req.params.patientId;
 	try{
 		const dbResponse = await db.verifyPatient(patientId)
-		if(dbResponse.lenght > 0){
+		console.log(dbResponse.length)
+		if(dbResponse.length > 0){
 			res.status(200).send(dbResponse)
 		}else{
 			res.status(404).send("El paciente no esta registrado")
@@ -59,9 +59,10 @@ app.get('/api/verifyPatient/:patientId', tokenVerification.forReception, async(r
 
 app.post('/api/makeHistory', tokenVerification.forReception, async(req, res) => {
 	const data = req.body;
+	console.log(data)
 	try{
 		const dbResponse = await db.makeHistory(data)
-		res.status(200).send("Historia creada")
+		res.status(200).send(dbResponse)
 	}catch(err){
 		console.log(err)
 		res.status(500).send(err)
@@ -94,6 +95,16 @@ app.delete('/api/cancelDate/:dateId', tokenVerification.forReception, async(req,
 	const dateId = req.params.dateId;
 	try{
 		const dbResponse = await db.cancelDate(dateId)
+		res.status(200).send(dbResponse)
+	}catch(err){
+		console.log(err)
+		res.status(500).send(err)
+	}
+})
+
+app.get('/api/getStudentList', tokenVerification.forReception, async(req, res) => {
+	try{
+		const dbResponse = await db.getStudentList()
 		res.status(200).send(dbResponse)
 	}catch(err){
 		console.log(err)

@@ -57,11 +57,21 @@ app.get('/api/verifyPatient/:patientId', tokenVerification.forReception, async(r
 	}
 })
 
-app.post('/api/makeHistory', tokenVerification.forReception, async(req, res) => {
+app.post('/api/makeAdultHistory', tokenVerification.forReception, async(req, res) => {
 	const data = req.body;
-	console.log(data)
 	try{
-		const dbResponse = await db.makeHistory(data)
+		const dbResponse = await db.makeAdultHistory(data)
+		res.status(200).send(dbResponse)
+	}catch(err){
+		console.log(err)
+		res.status(500).send(err)
+	}
+})
+
+app.post('/api/makeChildHistory', tokenVerification.forReception, async(req, res) => {
+	const data = req.body;
+	try{
+		const dbResponse = await db.makeChildHistory(data)
 		res.status(200).send(dbResponse)
 	}catch(err){
 		console.log(err)

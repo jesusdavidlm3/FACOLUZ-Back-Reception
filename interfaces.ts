@@ -12,7 +12,6 @@ export interface makeAdultHistory{
     sex: number,
     race: number,
     instructionGrade: number,
-    phone: string,
     birthPlace: string,
     childPosition: number,
     ethnicity?: number,
@@ -26,7 +25,12 @@ export interface makeAdultHistory{
     companionName: string,
     companionPhone: string,
     companionRelationship: string,
-    idStudent: number
+    idStudent: number,
+    phone: string,
+    currentWorking: number,
+    workType: string,
+    homeOwnership: number,
+    familyBurden: 1
 }
 
 export interface makeChildHistory{
@@ -56,13 +60,8 @@ export interface makeChildHistory{
     representativePhone: string,
     representativeWorking: number,
     representativeWorkType?: string,
-    representativeWorkAddress?: string,
-    representativeWorkPhone?: string,
-    representativeWorkEntry?: string,
-    representativeWorkLeaving?: string,
     representativeFamilyBurden?: string,
     homeOwnership: number,
-    numberOfRooms: number,
     idStudent: number,
 }
 

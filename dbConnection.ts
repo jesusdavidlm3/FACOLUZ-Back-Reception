@@ -53,6 +53,7 @@ export async function verifyPatient(patientId: number) {
 }
 
 export async function makeAdultHistory(data: t.makeAdultHistory) {
+	console.log(data)
 	const id = crypto.randomUUID()
 	const patientIdentification = data.patientIdentification
 	const name = data.name
@@ -62,7 +63,6 @@ export async function makeAdultHistory(data: t.makeAdultHistory) {
 	const sex = data.sex
 	const race = data.race
 	const instructionGrade = data.instructionGrade
-	const phone = data.phone
 	const birthPlace = data.birthPlace
 	const childPosition = data.childPosition
 	const addressState = data.addressState
@@ -79,6 +79,12 @@ export async function makeAdultHistory(data: t.makeAdultHistory) {
 	const rawNow = Date.now()
 	const createPatient = toSqlDateTime(rawNow)
 
+	const phone = data.phone
+	const currentWorking = data.currentWorking
+	const workType = data.workType
+	const familyBurden = data.familyBurden
+	const homeOwnership = data.homeOwnership
+
 	console.log(idStudent)
 	//Seleccionar una seccion segun el estudiante dado
 	//segun la seccion encontrada seleccionar un docente
@@ -91,7 +97,7 @@ export async function makeAdultHistory(data: t.makeAdultHistory) {
 		WHERE c.userId = ?
 	`, [idStudent])
 
-	const _res = await execute(`
+	const _res1 = await execute(`
 		INSERT INTO patients(
 			id,
 			patientIdentificacion,
@@ -102,7 +108,6 @@ export async function makeAdultHistory(data: t.makeAdultHistory) {
 			sex,
 			race,
 			instructionGrade,
-			phone,
 			birthPlace,
 			childPosition,
 			addressState,
@@ -117,8 +122,9 @@ export async function makeAdultHistory(data: t.makeAdultHistory) {
 			companionRelationship,
 			idStudent,
 			createPatient,
-			idTeacher
-		) VALUES(?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`, [
+			idTeacher,
+		) VALUES(?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+		`, [
 			id,
 			patientIdentification,
 			name,
@@ -128,7 +134,6 @@ export async function makeAdultHistory(data: t.makeAdultHistory) {
 			sex,
 			race,
 			instructionGrade,
-			phone,
 			birthPlace,
 			childPosition,
 			addressState,
@@ -144,7 +149,25 @@ export async function makeAdultHistory(data: t.makeAdultHistory) {
 			idStudent,
 			createPatient,
 			idTeacher[0].userId
-			])
+		])
+
+		const _res2 = await execute(`
+			INSERT INTO adulthistories(
+				patientId,
+				phone,
+				currentWorking,
+				workType,
+				familyBurden,
+				homeOwnership
+			) VALUES(?, ?, ?, ?, ?, ?)
+		`, [
+			id,
+			phone,
+			currentWorking,
+			workType,
+			familyBurden,
+			homeOwnership
+		])
 	return {uuid: id}
 }
 
@@ -181,13 +204,8 @@ export async function makeChildHistory(data:t.makeChildHistory) {
 	const representativePhone = data.representativePhone
 	const representativeWorking = data.representativeWorking
 	const representativeWorkType = data.representativeWorkType
-	const representativeWorkAddress = data.representativeWorkAddress
-	const representativeWorkPhone = data.representativeWorkPhone
-	const representativeWorkEntry = data.representativeWorkEntry
-	const representativeWorkLeaving = data.representativeWorkLeaving
 	const representativeFamilyBurden = data.representativeFamilyBurden
 	const homeOwnership = data.homeOwnership
-	const numberOfRooms = data.numberOfRooms
 
 	console.log(idStudent)
 	//Seleccionar una seccion segun el estudiante dado
@@ -202,6 +220,7 @@ export async function makeChildHistory(data:t.makeChildHistory) {
 	`, [idStudent])
 
 	const _res = await execute(`
+		BEGIN;
 		INSERT INTO patients(
 			id,
 			patientCode,
@@ -228,7 +247,21 @@ export async function makeChildHistory(data:t.makeChildHistory) {
 			idStudent,
 			createPatient,
 			idTeacher
-		) VALUES(?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`, [
+		) VALUES(?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?);
+		
+		INSERT INTO childHistories(
+			representativeId,
+			representativeName,
+			representativeInstructionGrade,
+			representativePhone,
+			representativeWorking,
+			representativeWorkType,
+			representativeFamilyBurden,
+			homeOwnership,
+		) VALUES(?, ?, ?, ?, ?, ?, ?, ?, ?, ?);
+
+		COMMIT;
+		`, [
 			id,
 			patientCode,
 			name,
@@ -253,45 +286,17 @@ export async function makeChildHistory(data:t.makeChildHistory) {
 			companionRelationship,
 			idStudent,
 			createPatient,
-			idTeacher[0].userId
-		]
-	)
-
-	const _res2 = await execute(`
-		INSERT INTO childHistories(
-			patientId,
-			currentStudying,
+			idTeacher[0].userId,
+			representativeId,
 			representativeName,
-			representativeIdentification,
-			representativePhone,
 			representativeInstructionGrade,
-			homeOwnership,
-			numberOfRooms,
+			representativePhone,
 			representativeWorking,
 			representativeWorkType,
-			representativeWorkAddress,
-			representativeWorkPhone,
-			representativeWorkEntry,
-			representativeWorkLeaving,
 			representativeFamilyBurden,
-		) VALUES(?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
-	`, [
-		id,
-		currentStudying,
-		representativeName,
-		representativeId,
-		representativePhone,
-		representativeInstructionGrade,
-		homeOwnership,
-		numberOfRooms,
-		representativeWorking,
-		representativeWorkType,
-		representativeWorkAddress,
-		representativeWorkPhone,
-		representativeWorkEntry,
-		representativeWorkLeaving,
-		representativeFamilyBurden
-	])
+			homeOwnership,
+		]
+	)
 
 	return {uuid: id, patientCode: patientCode}
 }

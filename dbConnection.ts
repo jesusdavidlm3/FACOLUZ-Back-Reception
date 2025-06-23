@@ -122,7 +122,7 @@ export async function makeAdultHistory(data: t.makeAdultHistory) {
 			companionRelationship,
 			idStudent,
 			createPatient,
-			idTeacher,
+			idTeacher
 		) VALUES(?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
 		`, [
 			id,

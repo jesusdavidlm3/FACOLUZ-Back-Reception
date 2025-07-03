@@ -342,6 +342,6 @@ export async function cancelDate(dateId: number) {
 }
 
 export async function getStudentList() {
-	const res = await query('SELECT * FROM users WHERE type = 2 AND active = 1')
+	const res = await query('SELECT u.id, u.name, u.lastname FROM users u INNER JOIN clases c ON u.id = c.userId WHERE u.type = 2 AND u.active = 1')
 	return res
 }

@@ -70,8 +70,10 @@ app.post('/api/makeAdultHistory', tokenVerification.forReception, async(req, res
 
 app.post('/api/makeChildHistory', tokenVerification.forReception, async(req, res) => {
 	const data = req.body;
+	console.log(data)
 	try{
 		const dbResponse = await db.makeChildHistory(data)
+		console.log(dbResponse)
 		res.status(200).send(dbResponse)
 	}catch(err){
 		console.log(err)

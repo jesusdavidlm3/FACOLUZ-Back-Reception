@@ -92,6 +92,38 @@ app.post('/api/makeDate', tokenVerification.forReception, async(req, res) => {
 	}
 })
 
+app.get('/api/getDates', tokenVerification.forReception, async(req, res) => {
+	try{
+		const dbResponse = await db.getDates()
+		res.status(200).send(dbResponse)
+	}catch(err){
+		console.log(err)
+		res.status(500).send(err)
+	}
+})
+
+app.get('/api/getDateByPatient/:patientId', tokenVerification.forReception, async(req, res) => {
+	const patientId = req.params.patientId;
+	try{
+		const dbResponse = await db.getDatesByPatient(patientId)
+		res.status(200).send(dbResponse)
+	}catch(err){
+		console.log(err)
+		res.status(500).send(err)
+	}
+})
+
+app.get('/api/getDateByDate/:date', tokenVerification.forReception, async(req, res) => {
+	const date = req.params.date;
+	try{
+		const dbResponse = await db.getDateByDate(date)
+		res.status(200).send(dbResponse)
+	}catch(err){
+		console.log(err)
+		res.status(500).send(err)
+	}
+})
+
 app.patch('/api/editDate', tokenVerification.forReception, async(req, res) => {
 	const data = req.body;
 	try{

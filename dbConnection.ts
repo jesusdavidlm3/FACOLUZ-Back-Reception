@@ -62,9 +62,10 @@ export async function makeAdultHistory(data: t.makeAdultHistory) {
 	const birthDate = toSqlDateTime(data.birthDate)
 	const sex = data.sex
 	const race = data.race
+	const ethnicity = data.ethnicity
 	const instructionGrade = data.instructionGrade
 	const birthPlace = data.birthPlace
-	const childPosition = data.childPosition
+	//const childPosition = data.childPosition
 	const addressState = data.addressState
 	const addressMunicipality = data.addressMunicipality
 	const addressCity = data.addressCity
@@ -85,7 +86,6 @@ export async function makeAdultHistory(data: t.makeAdultHistory) {
 	const familyBurden = data.familyBurden
 	const homeOwnership = data.homeOwnership
 
-	console.log(idStudent)
 	//Seleccionar una seccion segun el estudiante dado
 	//segun la seccion encontrada seleccionar un docente
 	//el docente seleccionado pasa a ser idTeacher
@@ -107,9 +107,9 @@ export async function makeAdultHistory(data: t.makeAdultHistory) {
 			birthDate,
 			sex,
 			race,
+			ethnicity,
 			instructionGrade,
 			birthPlace,
-			childPosition,
 			addressState,
 			addressMunicipality,
 			addressCity,
@@ -122,8 +122,9 @@ export async function makeAdultHistory(data: t.makeAdultHistory) {
 			companionRelationship,
 			idStudent,
 			createPatient,
-			idTeacher
-		) VALUES(?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+			idTeacher,
+			homeOwnership
+		) VALUES(?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
 		`, [
 			id,
 			patientIdentification,
@@ -133,9 +134,10 @@ export async function makeAdultHistory(data: t.makeAdultHistory) {
 			birthDate,
 			sex,
 			race,
+			ethnicity,
 			instructionGrade,
 			birthPlace,
-			childPosition,
+			//childPosition,
 			addressState,
 			addressMunicipality,
 			addressCity,
@@ -148,7 +150,8 @@ export async function makeAdultHistory(data: t.makeAdultHistory) {
 			companionRelationship,
 			idStudent,
 			createPatient,
-			idTeacher[0].userId
+			idTeacher[0].userId,
+			homeOwnership
 		])
 
 		const _res2 = await execute(`
@@ -157,16 +160,14 @@ export async function makeAdultHistory(data: t.makeAdultHistory) {
 				phone,
 				currentWorking,
 				workType,
-				familyBurden,
-				homeOwnership
-			) VALUES(?, ?, ?, ?, ?, ?)
+				familyBurden
+			) VALUES(?, ?, ?, ?, ?)
 		`, [
 			id,
 			phone,
 			currentWorking,
 			workType,
-			familyBurden,
-			homeOwnership
+			familyBurden
 		])
 	return {uuid: id}
 }
@@ -177,7 +178,7 @@ export async function makeChildHistory(data:t.makeChildHistory) {
 	const name = data.name
 	const lastname = data.lastname
 	const birthDate = toSqlDateTime(data.birthDate)
-	const childPosition = data.childPosition
+	//const childPosition = data.childPosition
 	const sex = data.sex
 	const race = data.race
 	const ethnicity = data.ethnicity
@@ -219,8 +220,7 @@ export async function makeChildHistory(data:t.makeChildHistory) {
 		WHERE c.userId = ?
 	`, [idStudent])
 
-	const _res = await execute(`
-		BEGIN;
+	const _res1 = await execute(`
 		INSERT INTO patients(
 			id,
 			patientCode,
@@ -233,7 +233,6 @@ export async function makeChildHistory(data:t.makeChildHistory) {
 			ethnicity,
 			instructionGrade,
 			birthPlace,
-			childPosition,
 			addressState,
 			addressMunicipality,
 			addressCity,
@@ -246,22 +245,9 @@ export async function makeChildHistory(data:t.makeChildHistory) {
 			companionRelationship,
 			idStudent,
 			createPatient,
-			idTeacher
-		) VALUES(?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?);
-		
-		INSERT INTO childHistories(
-			representativeId,
-			representativeName,
-			representativeInstructionGrade,
-			representativePhone,
-			representativeWorking,
-			representativeWorkType,
-			representativeFamilyBurden,
-			homeOwnership,
-		) VALUES(?, ?, ?, ?, ?, ?, ?, ?, ?, ?);
-
-		COMMIT;
-		`, [
+			idTeacher,
+			homeOwnership
+		) VALUES(?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?);`,[
 			id,
 			patientCode,
 			name,
@@ -273,7 +259,7 @@ export async function makeChildHistory(data:t.makeChildHistory) {
 			ethnicity,
 			instructionGrade,
 			birthPlace,
-			childPosition,
+			//childPosition,
 			addressState,
 			addressMunicipality,
 			addressCity,
@@ -287,16 +273,31 @@ export async function makeChildHistory(data:t.makeChildHistory) {
 			idStudent,
 			createPatient,
 			idTeacher[0].userId,
+			homeOwnership
+		])
+
+		const _res2 = await execute(`INSERT INTO childHistories(
+			patientId,
+			currentStudying,
+			representativeIdentification,
+			representativeName,
+			representativeInstructionGrade,
+			representativePhone,
+			representativeWorking,
+			representativeWorkType,
+			representativeFamilyBurden
+		) VALUES(?, ?, ?, ?, ?, ?, ?, ?, ?);
+		`,[
+			id,
+			currentStudying,
 			representativeId,
 			representativeName,
 			representativeInstructionGrade,
 			representativePhone,
 			representativeWorking,
 			representativeWorkType,
-			representativeFamilyBurden,
-			homeOwnership,
-		]
-	)
+			representativeFamilyBurden
+		])
 
 	return {uuid: id, patientCode: patientCode}
 }
@@ -321,6 +322,26 @@ export async function makeDate(data: t.makeDate) {
 			date
 		])
 	return {dateUUID: id}
+}
+
+export async function getDates() {
+	const res = await query('SELECT p.id, p.name, p.lastname, d.date, u.name AS doctorName, u.lastname AS doctorLastname FROM dates d INNER JOIN patients p INNER JOIN users u ON (d.patientId = p.id AND u.id = d.doctorId) WHERE status = 1')
+	return res
+}
+
+export async function getDatesByPatient(patientId: number) {
+	const res = await query('SELECT p.id, p.name, p.lastname, d.date, u.name AS doctorName, u.lastname AS doctorLastname FROM dates d INNER JOIN patients p INNER JOIN users u ON (d.patientId = p.id AND u.id = d.doctorId) WHERE status = 1 AND (p.patientIdentificacion = ? OR p.patientCode = ?)' , [patientId, patientId])
+	return res
+}
+
+/*export async function getDatesByDoctor(doctorId: number) {
+	const res = await query('SELECT * FROM dates WHERE doctorId = ? AND status = 1', [doctorId])
+	return res
+}*/
+
+export async function getDateByDate(date: Date) {
+	const res = await query('SELECT p.id, p.name, p.lastname, d.date, u.name AS doctorName, u.lastname AS doctorLastname FROM dates d INNER JOIN patients p INNER JOIN users u ON (d.patientId = p.id AND u.id = d.doctorId) WHERE status = 1 AND DATE(d.date) = ?' , [date])
+	return res
 }
 
 export async function editDate(data: t.editDate) {

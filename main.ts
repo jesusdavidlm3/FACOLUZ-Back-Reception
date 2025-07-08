@@ -95,6 +95,7 @@ app.post('/api/makeDate', tokenVerification.forReception, async(req, res) => {
 app.get('/api/getDates', tokenVerification.forReception, async(req, res) => {
 	try{
 		const dbResponse = await db.getDates()
+		console.log(dbResponse)
 		res.status(200).send(dbResponse)
 	}catch(err){
 		console.log(err)

@@ -325,12 +325,12 @@ export async function makeDate(data: t.makeDate) {
 }
 
 export async function getDates() {
-	const res = await query('SELECT p.id, p.name AS patientName, p.lastname AS patientLastname, d.date, u.name AS doctorName, u.lastname AS doctorLastname FROM dates d INNER JOIN patients p INNER JOIN users u ON (d.patientId = p.id AND u.id = d.doctorId) WHERE status = 1')
+	const res = await query('SELECT d.id AS dateId, p.id, p.name AS patientName, p.lastname AS patientLastname, d.date, u.name AS doctorName, u.lastname AS doctorLastname FROM dates d INNER JOIN patients p INNER JOIN users u ON (d.patientId = p.id AND u.id = d.doctorId) WHERE status = 1 ORDER BY d.date ASC')
 	return res
 }
 
 export async function getDatesByPatient(patientId: number) {
-	const res = await query('SELECT p.id, p.name AS patientName, p.lastname AS patientLastname, d.date, u.name AS doctorName, u.lastname AS doctorLastname FROM dates d INNER JOIN patients p INNER JOIN users u ON (d.patientId = p.id AND u.id = d.doctorId) WHERE status = 1 AND (p.patientIdentificacion = ? OR p.patientCode = ?)' , [patientId, patientId])
+	const res = await query('SELECT d.id AS dateId, p.id, p.name AS patientName, p.lastname AS patientLastname, d.date, u.name AS doctorName, u.lastname AS doctorLastname FROM dates d INNER JOIN patients p INNER JOIN users u ON (d.patientId = p.id AND u.id = d.doctorId) WHERE status = 1 AND (p.patientIdentificacion = ? OR p.patientCode = ?) ORDER BY d.date ASC' , [patientId, patientId])
 	return res
 }
 
@@ -340,7 +340,7 @@ export async function getDatesByPatient(patientId: number) {
 }*/
 
 export async function getDateByDate(date: Date) {
-	const res = await query('SELECT p.id, p.name AS patientName, p.lastname AS patientLastname, d.date, u.name AS doctorName, u.lastname AS doctorLastname FROM dates d INNER JOIN patients p INNER JOIN users u ON (d.patientId = p.id AND u.id = d.doctorId) WHERE status = 1 AND DATE(d.date) = ?' , [date])
+	const res = await query('SELECT d.id AS dateId, p.id, p.name AS patientName, p.lastname AS patientLastname, d.date, u.name AS doctorName, u.lastname AS doctorLastname FROM dates d INNER JOIN patients p INNER JOIN users u ON (d.patientId = p.id AND u.id = d.doctorId) WHERE status = 1 AND DATE(d.date) = ? ORDER BY d.date ASC' , [date])
 	return res
 }
 

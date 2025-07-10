@@ -72,8 +72,7 @@ export interface makeDate{
 }
 
 export interface editDate{
-    id: string,
-    patientId: number,
+    id: number,
     doctorId: number,
     date: Date
 }

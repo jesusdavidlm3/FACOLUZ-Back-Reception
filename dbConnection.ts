@@ -325,12 +325,12 @@ export async function makeDate(data: t.makeDate) {
 }
 
 export async function getDates() {
-	const res = await query('SELECT d.id AS dateId, p.id, p.name AS patientName, p.lastname AS patientLastname, d.date, u.name AS doctorName, u.lastname AS doctorLastname FROM dates d INNER JOIN patients p INNER JOIN users u ON (d.patientId = p.id AND u.id = d.doctorId) WHERE status = 1 ORDER BY d.date ASC')
+	const res = await query('SELECT d.id AS dateId, p.id, p.name AS patientName, p.lastname AS patientLastname, d.date, d.doctorId, u.name AS doctorName, u.lastname AS doctorLastname FROM dates d INNER JOIN patients p INNER JOIN users u ON (d.patientId = p.id AND u.id = d.doctorId) WHERE status = 1 ORDER BY d.date ASC')
 	return res
 }
 
 export async function getDatesByPatient(patientId: number) {
-	const res = await query('SELECT d.id AS dateId, p.id, p.name AS patientName, p.lastname AS patientLastname, d.date, u.name AS doctorName, u.lastname AS doctorLastname FROM dates d INNER JOIN patients p INNER JOIN users u ON (d.patientId = p.id AND u.id = d.doctorId) WHERE status = 1 AND (p.patientIdentificacion = ? OR p.patientCode = ?) ORDER BY d.date ASC' , [patientId, patientId])
+	const res = await query('SELECT d.id AS dateId, p.id, p.name AS patientName, p.lastname AS patientLastname, d.date, d.doctorId, u.name AS doctorName, u.lastname AS doctorLastname FROM dates d INNER JOIN patients p INNER JOIN users u ON (d.patientId = p.id AND u.id = d.doctorId) WHERE status = 1 AND (p.patientIdentificacion = ? OR p.patientCode = ?) ORDER BY d.date ASC' , [patientId, patientId])
 	return res
 }
 
@@ -340,21 +340,17 @@ export async function getDatesByPatient(patientId: number) {
 }*/
 
 export async function getDateByDate(date: Date) {
-	const res = await query('SELECT d.id AS dateId, p.id, p.name AS patientName, p.lastname AS patientLastname, d.date, u.name AS doctorName, u.lastname AS doctorLastname FROM dates d INNER JOIN patients p INNER JOIN users u ON (d.patientId = p.id AND u.id = d.doctorId) WHERE status = 1 AND DATE(d.date) = ? ORDER BY d.date ASC' , [date])
+	const res = await query('SELECT d.id AS dateId, p.id, p.name AS patientName, p.lastname AS patientLastname, d.date, d.doctorId, u.name AS doctorName, u.lastname AS doctorLastname FROM dates d INNER JOIN patients p INNER JOIN users u ON (d.patientId = p.id AND u.id = d.doctorId) WHERE status = 1 AND DATE(d.date) = ? ORDER BY d.date ASC' , [date])
 	return res
 }
 
 export async function editDate(data: t.editDate) {
-
 	const id = data.id
-	const patientId = data.patientId
 	const doctorId = data.doctorId
 	const date = data.date
 
-	const res = await execute(`
-		UPDATE dates SET patientId = ?, doctorId = ?, date = ? WHERE id = ?
-	`, [patientId, doctorId, date, id])
-	return res
+	const res = await execute(`UPDATE dates SET  doctorId = ?, date = ? WHERE id = ?`, [doctorId, date, id])
+	return {result: res.affectedRows > 0 ? 'success' : 'error'}
 }
 
 export async function cancelDate(dateId: number) {

@@ -95,7 +95,6 @@ app.post('/api/makeDate', tokenVerification.forReception, async(req, res) => {
 app.get('/api/getDates', tokenVerification.forReception, async(req, res) => {
 	try{
 		const dbResponse = await db.getDates()
-		console.log(dbResponse)
 		res.status(200).send(dbResponse)
 	}catch(err){
 		console.log(err)
@@ -136,7 +135,7 @@ app.patch('/api/editDate', tokenVerification.forReception, async(req, res) => {
 	}
 })
 
-app.delete('/api/cancelDate/:dateId', tokenVerification.forReception, async(req, res) => {
+app.patch('/api/cancelDate/:dateId', tokenVerification.forReception, async(req, res) => {
 	const dateId = req.params.dateId;
 	try{
 		const dbResponse = await db.cancelDate(dateId)

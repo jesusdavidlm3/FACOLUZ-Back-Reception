@@ -359,7 +359,7 @@ export async function editDate(data: t.editDate) {
 
 export async function cancelDate(dateId: number) {
 	const res = await execute('UPDATE dates SET status = 2 WHERE id = ?', [dateId])
-	return res
+	return {result: res.affectedRows > 0 ? 'success' : 'error'}
 }
 
 export async function getStudentList() {
